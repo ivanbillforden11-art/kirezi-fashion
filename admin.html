@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kirezi · Neon Admin</title>
+  <!-- Google Fonts: modern, bold, fashion-forward -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ----- RESET & GLOBAL ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* FASHION BACKGROUND: subtle gradient + soft neon accents + fabric-like texture */
+    body {
+      min-height: 100vh;
+      background: #0b0b0f;  /* deep near-black */
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255, 0, 150, 0.08) 0%, transparent 30%),
+        radial-gradient(circle at 80% 70%, rgba(0, 255, 255, 0.08) 0%, transparent 35%),
+        radial-gradient(circle at 40% 80%, rgba(200, 0, 255, 0.05) 0%, transparent 40%),
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 2px, transparent 2px, transparent 6px);
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      padding: 20px;
+    }
+
+    /* MAIN CONTAINER - soft glow, slightly transparent, fashion-magazine feel */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      background: rgba(15, 15, 20, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 255, 255, 0.1) inset, 0 0 60px rgba(0, 255, 255, 0.1);
+      padding: 30px;
+      transition: all 0.3s ease;
+    }
+
+    /* HIDE / SHOW utility */
+    .hidden {
+      display: none !important;
+    }
+
+    /* ----- LOGIN SCREEN (NEON FASHION EDITION) ----- */
+    .login-box {
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 30px 25px;
+      background: rgba(10, 10, 15, 0.9);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 20, 200, 0.4);
+      box-shadow: 0 0 30px rgba(255, 20, 200, 0.2), 0 0 80px rgba(0, 255, 255, 0.1), inset 0 0 20px rgba(255, 20, 200, 0.1);
+      backdrop-filter: blur(8px);
+      transition: box-shadow 0.3s;
+      position: relative; /* added for ::before positioning */
+    }
+
+    /* Animated gradient border effect (fashion-forward) */
+    .login-box::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 22px;
+      background: linear-gradient(45deg, #ff00cc, #00ffff, #ff00cc);
+      background-size: 300% 300%;
+      z-index: -1;
+      filter: blur(12px);
+      opacity: 0.5;
+      animation: borderGlow 6s ease infinite;
+    }
+
+    @keyframes borderGlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .login-box h2 {
+      font-family: 'Syncopate', sans-serif;
+      font-weight: 700;
+      font-size: 2rem;
+      text-align: center;
+      color: #fff;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 35px;
+      text-shadow: 0 0 8px #ff00cc, 0 0 20px #ff00cc, 0 0 30px #00ffff;
+      position: relative;
+    }
+
+    .login-box h2::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #ff00cc, #00ffff);
+      margin: 12px auto 0;
+      border-radius: 4px;
+      box-shadow: 0 0 15px #ff00cc, 0 0 30px #00ffff;
+    }
+
+    /* Input styling – minimal, futuristic */
+    .input-group {
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 16px 12px 8px 12px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      outline: none;
+      color: #fff;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 1px;
+      transition: border-color 0.3s;
+    }
+
+    .login-box input:focus {
+      border-bottom-color: #ff00cc;
+      box-shadow: 0 8px 15px -8px #ff00cc;
+    }
+
+    .login-box label {
+      position: absolute;
+      left: 12px;
+      top: 14px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.95rem;
+      font-weight: 300;
+      pointer-events: none;
+      transition: 0.25s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .login-box input:focus + label,
+    .login-box input:not(:placeholder-shown) + label {
+      top: -8px;
+      font-size: 0.7rem;
+      color: #00ffff;
+      text-shadow: 0 0 6px #00ffff;
+      font-weight: 600;
+    }
+
+    /* Neon button – with fashion gradient */
+    .login-btn {
+      width: 100%;
+      padding: 16px;
+      margin-top: 10px;
+      background: transparent;
+      border: 2px solid #ff00cc;
+      border-radius: 50px;
+      color: #fff;
+      font-family: 'Syncopate', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(255, 0, 204, 0.5), 0 0 30px rgba(0, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-btn:hover {
+      background: linear-gradient(90deg, #ff00cc, #00ffff);
+      color: #0b0b0f;
+      border-color: transparent;
+      box-shadow: 0 0 30px #ff00cc, 0 0 60px #00ffff;
+      text-shadow: none;
+    }
+
+    /* DASHBOARD – clean, editorial, luxury */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 15px;
+    }
+
+    .dashboard-header h2 {
+      font-family: 'Syncopate', sans-serif;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #fff;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      border: none;
+      padding: 0;
+    }
+
+    .dashboard-header h2 span {
+      color: #ff00cc;
+      text-shadow: 0 0 15px #ff00cc;
+    }
+
+    /* Tables – sleek, minimal */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: rgba(20, 20, 28, 0.6);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 255, 255, 0.15);
+    }
+
+    th {
+      background: rgba(255, 0, 204, 0.15);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 16px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      text-shadow: 0 0 5px rgba(255, 0, 204, 0.5);
+      font-family: 'Syncopate', sans-serif;
+    }
+
+    td {
+      padding: 14px 12px;
+      color: #ddd;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-weight: 300;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(0, 255, 255, 0.05);
+      transition: background 0.2s;
+    }
+
+    /* Cart data style – monospace with neon accent */
+    .cart-data {
+      font-family: 'Courier New', monospace;
+      background: rgba(0, 255, 255, 0.08);
+      padding: 8px 12px;
+      border-radius: 10px;
+      color: #b0ffff;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      border-left: 3px solid #00ffff;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+      display: inline-block;
+    }
+
+    /* ADMIN ACTIONS – small neon buttons for customer management */
+    .admin-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      background: transparent;
+      border: 1px solid #00ffff;
+      color: #00ffff;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .action-btn:hover {
+      background: #00ffff;
+      color: #0b0b0f;
+      box-shadow: 0 0 20px #00ffff;
+    }
+
+    .action-btn.delete {
+      border-color: #ff00cc;
+      color: #ff00cc;
+      box-shadow: 0 0 8px rgba(255, 0, 204, 0.3);
+    }
+
+    .action-btn.delete:hover {
+      background: #ff00cc;
+      color: #0b0b0f;
+      box-shadow: 0 0 20px #ff00cc;
+    }
+
+    /* Search bar / filter – new for customer management */
+    .search-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+
+    .search-bar input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 30px;
+      padding: 10px 18px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      transition: all 0.2s;
+      width: 250px;
+    }
+
+    .search-bar input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+      font-style: italic;
+    }
+
+    .search-bar input:focus {
+      border-color: #ff00cc;
+      box-shadow: 0 0 15px rgba(255, 0, 204, 0.4);
+    }
+
+    /* Make sure the hidden class works with all elements */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 700px) {
+      .container { padding: 20px; }
+      .login-box { margin: 20px auto; padding: 25px 20px; }
+      .login-box h2 { font-size: 1.6rem; }
+      th, td { padding: 10px 8px; font-size: 0.75rem; }
+      .dashboard-header h2 { font-size: 1.4rem; }
+      .search-bar { flex-direction: column; align-items: stretch; }
+      .search-bar input { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MAIN CONTAINER – everything sits inside this for the glassmorphic effect -->
+  <div class="container" id="mainContainer">
+    <!-- LOGIN SCREEN (neon fashion edition) -->
+    <div id="loginScreen" class="login-box">
+      <h2>Admin</h2>
+      <!-- Input groups with floating labels -->
+      <div class="input-group">
+        <input type="text" id="adminUser" placeholder=" " required>
+        <label for="adminUser">Username</label>
+      </div>
+      <div class="input-group">
+        <input type="password" id="adminPass" placeholder=" " required>
+        <label for="adminPass">Password</label>
+      </div>
+      <button class="login-btn" onclick="login()">Enter</button>
+    </div>
+
+    <!-- DASHBOARD (hidden by default) -->
+    <div id="dashboard" class="hidden">
+      <div class="dashboard-header">
+        <h2><span>Kirezi</span> · Admin</h2>
+      </div>
+
+      <!-- NEW: Customer Management header with search -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2 style="font-family: 'Syncopate'; font-size: 1.3rem; color: #fff; letter-spacing: 2px; border-left: 5px solid #ff00cc; padding-left: 15px; text-shadow: 0 0 10px #ff00cc;">CUSTOMER MANAGEMENT</h2>
+        <div class="search-bar">
+          <input type="text" id="customerSearch" placeholder="🔍 Search by name or email..." oninput="filterCustomers()">
+        </div>
+      </div>
+
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Date Joined</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h2 style="font-family: 'Syncopate'; font-size: 1.3rem; color: #fff; margin: 40px 0 15px; letter-spacing: 2px; border-left: 5px solid #00ffff; padding-left: 15px; text-shadow: 0 0 10px #00ffff;">PENDING CARTS</h2>
+      <table id="cartsTable">
+        <thead>
+          <tr><th>User Email</th><th>Items in Cart</th><th>Last Updated</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // ========== GLOBAL STATE ==========
+    let currentUsers = [];       // store users for filtering
+    let currentCarts = [];       // store carts for display
+
+    // ========== RENDER FUNCTIONS ==========
+    function renderUsers(users) {
+      const uBody = document.querySelector('#usersTable tbody');
+      uBody.innerHTML = '';
+      if (!users.length) {
+        uBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: rgba(255,255,255,0.3); padding: 30px;">No customers found</td></tr>`;
+        return;
+      }
+      users.forEach((u, index) => {
+        const row = document.createElement('tr');
+        // store user id for actions (using email as unique identifier)
+        const userId = u.email;
+        row.innerHTML = `
+          <td>${escapeHtml(u.name)}</td>
+          <td>${escapeHtml(u.email)}</td>
+          <td>${escapeHtml(u.phone)}</td>
+          <td>${u.created_at.split('T')[0]}</td>
+          <td>
+            <div class="admin-actions">
+              <button class="action-btn" onclick="viewCustomer('${userId}')">View</button>
+              <button class="action-btn" onclick="editCustomer('${userId}')">Edit</button>
+              <button class="action-btn delete" onclick="deleteCustomer('${userId}')">Delete</button>
+            </div>
+          </td>
+        `;
+        uBody.appendChild(row);
+      });
+    }
+
+    function renderCarts(carts) {
+      const cBody = document.querySelector('#cartsTable tbody');
+      cBody.innerHTML = '';
+      if (!carts.length) {
+        cBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: rgba(255,255,255,0.3); padding: 30px;">No pending carts</td></tr>`;
+        return;
+      }
+      carts.forEach((c) => {
+        let parsedCart;
+        try {
+          parsedCart = JSON.parse(c.cart_data).map(item => `${item.qty}x ${item.name}`).join(', ');
+        } catch (e) {
+          parsedCart = c.cart_data;
+        }
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${escapeHtml(c.user_email)}</td>
+          <td><span class="cart-data">${escapeHtml(parsedCart)}</span></td>
+          <td>${c.updated_at.split('T')[0]}</td>
+          <td>
+            <div class="admin-actions">
+              <button class="action-btn" onclick="remindCart('${escapeHtml(c.user_email)}')">Remind</button>
+              <button class="action-btn delete" onclick="clearCart('${escapeHtml(c.user_email)}')">Clear</button>
+            </div>
+          </td>
+        `;
+        cBody.appendChild(row);
+      });
+    }
+
+    // ========== UTILITY ==========
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        if (m === '"') return '&quot;';
+        return m;
+      });
+    }
+
+    // ========== FILTER (search customers) ==========
+    function filterCustomers() {
+      const query = document.getElementById('customerSearch').value.toLowerCase().trim();
+      if (!query) {
+        renderUsers(currentUsers);
+        return;
+      }
+      const filtered = currentUsers.filter(u => 
+        u.name.toLowerCase().includes(query) || 
+        u.email.toLowerCase().includes(query)
+      );
+      renderUsers(filtered);
+    }
+
+    // ========== CUSTOMER ACTIONS (mock implementations) ==========
+    function viewCustomer(email) {
+      const user = currentUsers.find(u => u.email === email);
+      if (user) {
+        alert(`👤 Customer Details\n\nName: ${user.name}\nEmail: ${user.email}\nPhone: ${user.phone}\nJoined: ${user.created_at.split('T')[0]}`);
+      }
+    }
+
+    function editCustomer(email) {
+      const user = currentUsers.find(u => u.email === email);
+      if (!user) return;
+      // Simulate edit with prompts
+      const newName = prompt(`Edit name for ${user.email}:`, user.name);
+      if (newName !== null && newName.trim() !== '') {
+        user.name = newName.trim();
+      }
+      const newPhone = prompt(`Edit phone for ${user.email}:`, user.phone);
+      if (newPhone !== null && newPhone.trim() !== '') {
+        user.phone = newPhone.trim();
+      }
+      renderUsers(currentUsers);
+      filterCustomers(); // re-apply filter if any
+      alert('Customer updated (mock).');
+    }
+
+    function deleteCustomer(email) {
+      if (!confirm(`⚠️ Delete customer ${email}? This will also remove their cart.`)) return;
+      // Remove from users
+      currentUsers = currentUsers.filter(u => u.email !== email);
+      // Remove from carts
+      currentCarts = currentCarts.filter(c => c.user_email !== email);
+      renderUsers(currentUsers);
+      renderCarts(currentCarts);
+      filterCustomers();
+    }
+
+    // ========== CART ACTIONS (mock) ==========
+    function remindCart(email) {
+      alert(`📧 Reminder sent to ${email} about their pending cart.`);
+    }
+
+    function clearCart(email) {
+      if (!confirm(`Clear cart for ${email}?`)) return;
+      currentCarts = currentCarts.filter(c => c.user_email !== email);
+      renderCarts(currentCarts);
+    }
+
+    // ========== LOGIN (with new data & management) ==========
+    async function login() {
+      const user = document.getElementById('adminUser').value;
+      const pass = document.getElementById('adminPass').value;
+
+      if (user.trim() !== '' && pass.trim() !== '') {
+        // Extended mock data with more customers for demonstration
+        const mockData = {
+          users: [
+            { name: 'Elena Vogue', email: 'elena@kirezi.com', phone: '+1 212 555 7890', created_at: '2025-02-10T12:00:00Z' },
+            { name: 'Marcus Lux', email: 'marcus@kirezi.com', phone: '+44 20 7946 1234', created_at: '2025-01-28T09:30:00Z' },
+            { name: 'Aria Chen', email: 'aria@kirezi.com', phone: '+61 2 9876 5432', created_at: '2025-03-01T14:15:00Z' },
+            { name: 'Zara Night', email: 'zara@kirezi.com', phone: '+33 6 12 34 56 78', created_at: '2025-03-02T08:20:00Z' },
+            { name: 'Liam Couture', email: 'liam@kirezi.com', phone: '+1 415 555 0198', created_at: '2025-02-15T11:45:00Z' }
+          ],
+          carts: [
+            { user_email: 'elena@kirezi.com', cart_data: JSON.stringify([{ name: 'Silk Scarf', qty: 1 }, { name: 'Leather Belt', qty: 2 }]), updated_at: '2025-03-05T10:20:00Z' },
+            { user_email: 'marcus@kirezi.com', cart_data: JSON.stringify([{ name: 'Cashmere Coat', qty: 1 }, { name: 'Suede Boots', qty: 1 }]), updated_at: '2025-03-06T16:45:00Z' },
+            { user_email: 'aria@kirezi.com', cart_data: JSON.stringify([{ name: 'Designer Sunglasses', qty: 1 }]), updated_at: '2025-03-07T09:05:00Z' },
+            { user_email: 'zara@kirezi.com', cart_data: JSON.stringify([{ name: 'Velvet Clutch', qty: 1 }, { name: 'Pearl Earrings', qty: 3 }]), updated_at: '2025-03-08T14:30:00Z' }
+          ]
+        };
+
+        // Store data in global state
+        currentUsers = mockData.users.map(u => ({ ...u })); // shallow copy
+        currentCarts = mockData.carts.map(c => ({ ...c }));
+
+        // Hide login, show dashboard
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+
+        // Render initial tables
+        renderUsers(currentUsers);
+        renderCarts(currentCarts);
+
+        // Clear search field
+        document.getElementById('customerSearch').value = '';
+
+        /* ---- REAL FETCH (optional) ----
+        try {
+          const res = await fetch('/api/admin/data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user, password: pass })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            currentUsers = data.users;
+            currentCarts = data.carts;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            renderUsers(currentUsers);
+            renderCarts(currentCarts);
+          } else {
+            alert("Invalid Credentials");
+          }
+        } catch (error) {
+          alert("Connection error. Please try again.");
+        }
+        */
+      } else {
+        alert("Please enter both username and password.");
+      }
+    }
+
+    // Expose functions globally for inline onclick
+    window.login = login;
+    window.filterCustomers = filterCustomers;
+    window.viewCustomer = viewCustomer;
+    window.editCustomer = editCustomer;
+    window.deleteCustomer = deleteCustomer;
+    window.remindCart = remindCart;
+    window.clearCart = clearCart;
+  </script>
+</body>
+</html>
