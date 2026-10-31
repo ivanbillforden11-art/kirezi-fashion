@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirezi Fashion Store</title>
+    <style>
+        /* --- GENERAL STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f9f9f9; color: #333; }
+        a { text-decoration: none; color: inherit; }
+
+        /* --- HEADER & LOGO --- */
+        header {
+            background-color: #fff; padding: 15px 50px; display: flex; justify-content: space-between;
+            align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: bold; color: #000; }
+        .logo span { color: #d4af37; }
+        .logo img { height: 40px; border-radius: 50%; }
+        
+        .header-buttons { display: flex; gap: 15px; }
+
+        /* --- NEON BUTTONS --- */
+        .login-btn, .cart-btn {
+            padding: 10px 20px; background: transparent; border: 2px solid #00e5ff; color: #00e5ff;
+            border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s;
+            box-shadow: 0 0 10px #00e5ff, inset 0 0 10px #00e5ff; text-shadow: 0 0 5px #00e5ff;
+        }
+        .login-btn:hover, .cart-btn:hover { background: #00e5ff; color: #fff; box-shadow: 0 0 20px #00e5ff, inset 0 0 20px #00e5ff; }
+        
+        .cart-btn { border-color: #d4af37; color: #d4af37; box-shadow: 0 0 10px #d4af37, inset 0 0 10px #d4af37; text-shadow: 0 0 5px #d4af37; }
+        .cart-btn:hover { background: #d4af37; box-shadow: 0 0 20px #d4af37, inset 0 0 20px #d4af37; }
+
+        /* --- MAIN LAYOUT --- */
+        .main-container { display: flex; flex-direction: row; max-width: 1400px; margin: 0 auto; padding: 20px; gap: 20px; align-items: flex-start; }
+
+        /* --- LEFT SIDEBAR MENU --- */
+        .sidebar {
+            width: 250px; flex-shrink: 0; background: #fff; padding: 20px; border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: sticky; top: 90px;
+        }
+        .sidebar h3 { font-size: 16px; color: #d4af37; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .sidebar ul { list-style: none; margin-bottom: 25px; }
+        .sidebar ul li { margin-bottom: 10px; }
+        .sidebar ul li a { display: block; padding: 8px; border-radius: 5px; transition: 0.3s; cursor: pointer; font-size: 14px; color: #555; }
+        .sidebar ul li a:hover { background-color: #f0f8ff; color: #00a8cc; font-weight: bold; }
+
+        /* --- RIGHT CONTENT AREA --- */
+        .content-area { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+        /* --- SLIDER --- */
+        .slider-container { width: 100%; height: 350px; overflow: hidden; position: relative; border-radius: 10px; background: #000; }
+        .slide { width: 100%; height: 100%; position: absolute; opacity: 0; transition: opacity 0.8s ease-in-out; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; }
+        .slide.active { opacity: 1; }
+
+        /* --- PRODUCT GRID --- */
+        .products-section { padding: 10px 0; }
+        .products-section h2 { margin-bottom: 15px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .product-card { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: 0.3s; display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-card img { width: 100%; height: 250px; object-fit: cover; border-radius: 5px; }
+        .product-card h3 { margin: 10px 0 5px 0; font-size: 16px; }
+        .product-card .price { color: #00a8cc; font-weight: bold; font-size: 15px; margin-bottom: 10px; }
+        .product-card .category-tag { display:inline-block; font-size: 11px; color:#999; background:#f0f0f0; padding: 2px 8px; border-radius: 10px; align-self: flex-start; margin-bottom: 6px; }
+        
+        /* --- PRODUCT ACTIONS --- */
+        .product-actions { display: flex; gap: 10px; margin-top: auto; }
+        .add-cart-btn { flex: 1; padding: 10px; background: #00a8cc; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .add-cart-btn:hover { background: #008bb5; }
+        
+        .rate-btn { padding: 10px; background: #f0f0f0; color: #555; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+        .rate-btn:hover { background: #d4af37; color: white; }
+        
+        /* --- PRODUCT RATINGS (Stars) --- */
+        .product-rating { font-size: 14px; color: #ffd700; margin-bottom: 10px; cursor: pointer; }
+        .product-rating span { color: #888; font-size: 12px; margin-left: 5px; }
+
+        /* --- MODALS --- */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+        
+        .modal-content { 
+            background: #fff; padding: 30px; border-radius: 10px; width: 90%; max-width: 450px; 
+            position: relative; text-align: center; 
+            background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url('images/slide5.jpg');
+            background-size: cover; background-position: center;
+            max-height: 90vh; overflow-y: auto;
+        }
+        
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #333; z-index: 10;}
+        
+        /* --- FORMS & PAYMENT --- */
+        .neon-form input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; background: #fff; transition: 0.3s; }
+        .neon-form input:focus { outline: none; border-color: #00e5ff; box-shadow: 0 0 10px #00e5ff; }
+        .neon-form button { width: 100%; padding: 12px; background: #00e5ff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: 0 0 10px #00e5ff; }
+        
+        /* --- CART STYLES --- */
+        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; text-align: left; }
+        .cart-item-details { flex: 1; }
+        .cart-item-details h4 { font-size: 14px; margin-bottom: 2px; }
+        .cart-item-details p { font-size: 12px; color: #888; }
+        .remove-item { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .remove-item:hover { background: #cc0000; }
+        .cart-total { font-size: 18px; font-weight: bold; text-align: right; margin-top: 15px; color: #00a8cc; }
+
+        /* --- PAYMENT STYLES --- */
+        .payment-box { background: #fff3cd; border: 2px dashed #ffc107; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: left; }
+        .payment-box h3 { color: #856404; margin-bottom: 10px; font-size: 16px; }
+        .payment-box p { margin: 5px 0; font-size: 15px; color: #333; }
+        .payment-box strong { color: #d9534f; font-size: 18px; }
+
+        /* --- STARS & FOOTER --- */
+        .stars { font-size: 30px; color: #ccc; cursor: pointer; margin: 10px 0; display: flex; justify-content: center; gap: 5px;}
+        .stars .active { color: #ffd700; }
+        textarea { width: 100%; height: 80px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-top: 10px; background: #fff; }
+
+        footer { background: #111; color: #fff; padding: 40px 20px; text-align: center; position: relative; margin-top: 40px; }
+        .footer-info { display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; margin-bottom: 20px; }
+        .footer-info div h4 { color: #d4af37; margin-bottom: 10px; }
+        .copyright { position: absolute; bottom: 10px; left: 20px; font-size: 12px; color: #888; text-align: left; }
+        .copyright a { color: #00e5ff; }
+
+        @media (max-width: 768px) { .main-container { flex-direction: column; } .sidebar { width: 100%; position: static; } }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <img src="images/kirezi.jpeg" alt="Kirezi Logo">
+            KIREZI <span>FASHION</span>
+        </div>
+        <div class="header-buttons">
+            <button class="cart-btn" onclick="openModal('cartModal')">🛒 Cart (<span id="cartCount">0</span>)</button>
+            <button class="login-btn" onclick="openModal('loginModal')">Login / Register</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <aside class="sidebar">
+            <h3>Sort By Price</h3>
+            <ul>
+                <li><a onclick="sortProducts('low-high')">Price: Low to High</a></li>
+                <li><a onclick="sortProducts('high-low')">Price: High to Low</a></li>
+            </ul>
+            <h3>Categories</h3>
+            <ul id="categoryList">
+                <li><a onclick="filterCategory('Dresses')">Dresses</a></li>
+                <li><a onclick="filterCategory('Tops')">Tops</a></li>
+                <li><a onclick="filterCategory('Jogging')">Jogging</a></li>
+                <li><a onclick="filterCategory('Bags')">Bags</a></li>
+                <li><a onclick="filterCategory('All')" style="color:#00a8cc; font-weight:bold;">View All Products</a></li>
+            </ul>
+        </aside>
+
+        <div class="content-area">
+            <!-- SLIDER -->
+            <div class="slider-container">
+                <div class="slide active" style="background-image: url('images/Bckground 1.jpg');"></div>
+                <div class="slide" style="background-image: url('images/bckground 2.jpg');"></div>
+                <div class="slide" style="background-image: url('images/bckground 3.jpg');"></div>
+                <div class="slide" style="background-image: url('images/bckground 4.jpg');"></div>
+                <div class="slide" style="background-image: url('images/bckground 5.jpg');"></div>
+                <div class="slide" style="background-image: url('images/bckground 6.jpg');"></div>
+            </div>
+
+            <!-- PRODUCTS -->
+            <section class="products-section">
+                <h2 id="section-title">All Products</h2>
+                <div class="product-grid" id="productGrid"></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-info">
+            <div><h4>Location</h4><p>Muhanga City, Rwanda</p></div>
+            <div><h4>Contact Us</h4><p>Phone: 0781310880</p></div>
+            <div><h4>Follow Us</h4><p>Instagram | Facebook</p></div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 Kirezi Fashion Store. All rights reserved.<br>
+            Developed by <strong>IVAS</strong> | Contact: 0796300006 | Email: <a href="mailto:ivanbillforden11@gmail.com">ivanbillforden11@gmail.com</a>
+        </div>
+    </footer>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
+            <h2 style="margin-bottom: 20px;">Welcome to Kirezi</h2>
+            <form class="neon-form" onsubmit="handleLogin(event)">
+                <input type="text" placeholder="Full Name" required>
+                <input type="email" placeholder="Email Address" required>
+                <input type="tel" placeholder="Phone Number (e.g., 078...)" required>
+                <button type="submit">Login / Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CART MODAL -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('cartModal')">&times;</span>
+            <h2 style="margin-bottom: 20px;">Your Shopping Cart</h2>
+            <div id="cartItemsContainer" style="max-height: 300px; overflow-y: auto;">
+                <!-- Cart items will be injected here -->
+            </div>
+            <div class="cart-total" id="cartTotal">Total: 0 RWF</div>
+            <button class="login-btn" style="margin-top:20px; width:100%; background:#00a8cc; color:white;" onclick="openCheckout()">Proceed to Payment</button>
+        </div>
+    </div>
+
+    <!-- PAYMENT MODAL -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('paymentModal')">&times;</span>
+            <h2>Complete Your Payment</h2>
+            <div class="payment-box">
+                <h3>Mobile Money Instructions (MoMo)</h3>
+                <p>1. Dial <strong>*182*1*1#</strong> on your phone.</p>
+                <p>2. Select "Send Money" (or Pay).</p>
+                <p>3. Enter the amount: <strong id="paymentAmountText">0 RWF</strong></p>
+                <p>4. Send to one of these numbers:</p>
+                <p>📱 <strong>0793229055</strong> OR <strong>0781310880</strong></p>
+                <p>👤 Name: <strong>Viviane Uwingeneye</strong></p>
+            </div>
+            <button class="login-btn" style="width:100%; background:#28a745; color:white; border-color:#28a745;" onclick="confirmPayment()">I Have Sent The Money</button>
+        </div>
+    </div>
+
+    <!-- ITEM RATING MODAL -->
+    <div class="modal" id="itemRatingModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('itemRatingModal')">&times;</span>
+            <h2 id="ratingItemName" style="font-size: 18px; margin-bottom: 5px;">Rate this item</h2>
+            <p style="color:#888; font-size: 12px; margin-bottom: 15px;">How many stars do you give it?</p>
+            <div class="stars" id="itemStarContainer">
+                <span data-value="1">&#9733;</span><span data-value="2">&#9733;</span><span data-value="3">&#9733;</span><span data-value="4">&#9733;</span><span data-value="5">&#9733;</span>
+            </div>
+            <button class="login-btn" style="margin-top:15px; width:100%;" onclick="submitItemRating()">Submit Rating</button>
+        </div>
+    </div>
+
+    <!-- SITE FEEDBACK MODAL -->
+    <div class="modal" id="ratingModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('ratingModal')">&times;</span>
+            <h2>How was your experience?</h2>
+            <div class="stars" id="starContainer">
+                <span data-value="1">&#9733;</span><span data-value="2">&#9733;</span><span data-value="3">&#9733;</span><span data-value="4">&#9733;</span><span data-value="5">&#9733;</span>
+            </div>
+            <textarea placeholder="Leave a comment..." id="ratingComment"></textarea>
+            <button class="login-btn" style="margin-top:15px; width:100%;" onclick="submitRating()">Submit Feedback</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        const API_URL = '';
+        let allProducts = [];
+        let cart = JSON.parse(localStorage.getItem('kireziCart')) || [];
+        let itemRatings = JSON.parse(localStorage.getItem('kireziItemRatings')) || {}; 
+        let currentRatingProductId = null;
+
+        // --- INITIALIZE PRODUCTS ---
+        async function loadProducts() {
+            try {
+                const res = await fetch(`${API_URL}/api/products`);
+                allProducts = await res.json();
+            } catch (err) {
+                console.log("Using fallback product data.");
+                allProducts = [
+                    { id: 1,  name: "Lavender Monogram Handbag",         category: "Bags",    price: 10000, img: "images/BAG 1.jpeg" },
+                    { id: 2,  name: "Black & Gold 'L' Buckle Bag",       category: "Bags",    price: 15000, img: "images/BAG 2.jpeg" },
+                    { id: 3,  name: "Black Scarf-Accent Handbag",        category: "Bags",    price: 10000, img: "images/BAG 3.jpeg" },
+                    { id: 4,  name: "Black Quilted Clutch",              category: "Bags",    price: 5000,  img: "images/BAG 4.jpeg" },
+                    { id: 5,  name: "Adidas Grey & Black Tote",          category: "Bags",    price: 10000, img: "images/BAG collection.jpeg" },
+                    { id: 6,  name: "Black Asymmetrical Dress",          category: "Dresses", price: 6000,  img: "images/Dress 1.webp" },
+                    { id: 7,  name: "Plaid Wrap Long Sleeve Dress",      category: "Dresses", price: 6000,  img: "images/Dress 2.webp" },
+                    { id: 8,  name: "Floral Ruched Mini Dress",          category: "Dresses", price: 8000,  img: "images/Dress 3.webp" },
+                    { id: 9,  name: "Polka Dot Midi Dress",              category: "Dresses", price: 8000,  img: "images/Dress 4.webp" },
+                    { id: 10, name: "Black Knit Button Top",             category: "Dresses",    price: 5000,  img: "images/Dress 5.webp" },
+                    { id: 11, name: "Grey Patterned Sweater",            category: "Dresses",    price: 5000,  img: "images/Dress 6.webp" },
+                    { id: 12, name: "Black Side-Tie Top",                category: "Tops",    price: 6000,  img: "images/Tops.png" },
+                    { id: 13, name: "White 'Dior' Tee",                  category: "Tops",    price: 5000,  img: "images/Top 1.png" },
+                    { id: 14, name: "White Ribbed Side-Tie Tee",         category: "Jogging",    price: 6000,  img: "images/Jogging 1.jpeg" },
+                    { id: 15, name: "Grey Classic Joggers",              category: "Jogging", price: 9000,  img: "images/Jogging 2.jpg" },
+                    { id: 16, name: "Blue Textured Joggers",             category: "Jogging", price: 10000, img: "images/Jogging 3.jpg" },
+                    { id: 17, name: "Grey Baggy Sweatpants",             category: "Jogging", price: 11000, img: "images/Jogging 4.jpg" },
+                    { id: 18, name: "Black Striped Track Pants",         category: "Jogging", price: 10000, img: "images/Jogging 5.jpg" },
+                    { id: 19, name: "Beige Vintage Sweatpants",          category: "Jogging", price: 10000, img: "images/Jogging alo 6.jpg" },
+                    { id: 20, name: "Navy Blue alo Joggers",           category: "Jogging", price: 11000, img: "images/Jogging alo 7.jpg" }
+                ];
+            }
+            currentDisplayProducts = [...allProducts];
+            renderProducts(currentDisplayProducts);
+            updateCartUI(); // Load cart on start
+        }
+
+        let currentDisplayProducts = [];
+
+        function renderProducts(products) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+            if (products.length === 0) { grid.innerHTML = '<p>No products found in this category.</p>'; return; }
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                // Get Ratings
+                let ratingData = itemRatings[product.id] || { total: 0, count: 0 };
+                let avgRating = ratingData.count > 0 ? (ratingData.total / ratingData.count).toFixed(1) : "No ratings";
+                let starsHtml = ratingData.count > 0 ? `★ ${avgRating} <span>(${ratingData.count})</span>` : `<span>Rate this item</span>`;
+
+                card.innerHTML = `
+                    <img src="${product.img}" alt="${product.name}">
+                    <span class="category-tag">${product.category}</span>
+                    <h3>${product.name}</h3>
+                    <div class="product-rating" onclick="openItemRating(${product.id}, '${product.name}')">${starsHtml}</div>
+                    <p class="price">${product.price.toLocaleString()} RWF</p>
+                    <div class="product-actions">
+                        <button class="add-cart-btn" onclick="addToCart(${product.id})">Add to Cart</button>
+                        <button class="rate-btn" onclick="openItemRating(${product.id}, '${product.name}')">★</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- CART LOGIC ---
+        function addToCart(id) {
+            const product = allProducts.find(p => p.id === id);
+            if (!product) return;
+            
+            // Check if item exists
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            
+            saveCart();
+            updateCartUI();
+            alert(`${product.name} added to cart!`);
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            saveCart();
+            updateCartUI();
+        }
+
+        function saveCart() {
+            localStorage.setItem('kireziCart', JSON.stringify(cart));
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cartCount');
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            cartCount.innerText = totalItems;
+
+            const container = document.getElementById('cartItemsContainer');
+            const totalDiv = document.getElementById('cartTotal');
+            container.innerHTML = '';
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#888;">Your cart is empty.</p>';
+                totalDiv.innerText = 'Total: 0 RWF';
+                return;
+            }
+
+            let totalPrice = 0;
+            cart.forEach(item => {
+                totalPrice += item.price * item.qty;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div class="cart-item-details">
+                        <h4>${item.name}</h4>
+                        <p>${item.qty} x ${item.price.toLocaleString()} RWF</p>
+                    </div>
+                    <button class="remove-item" onclick="removeFromCart(${item.id})">Remove</button>
+                `;
+                container.appendChild(div);
+            });
+            totalDiv.innerText = `Total: ${totalPrice.toLocaleString()} RWF`;
+        }
+
+        // --- CHECKOUT & PAYMENT ---
+        function openCheckout() {
+            if (cart.length === 0) { alert("Your cart is empty!"); return; }
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            document.getElementById('paymentAmountText').innerText = `${total.toLocaleString()} RWF`;
+            closeModal('cartModal');
+            openModal('paymentModal');
+        }
+
+        function confirmPayment() {
+            alert("Thank you! Your order has been placed. We will verify your payment and contact you shortly.");
+            cart = [];
+            saveCart();
+            updateCartUI();
+            closeModal('paymentModal');
+        }
+
+        // --- ITEM RATING LOGIC ---
+        function openItemRating(id, name) {
+            currentRatingProductId = id;
+            document.getElementById('ratingItemName').innerText = "Rate: " + name;
+            // Reset stars
+            const stars = document.querySelectorAll('#itemStarContainer span');
+            stars.forEach(s => s.classList.remove('active'));
+            openModal('itemRatingModal');
+        }
+
+        // Hover effects for item stars
+        const itemStars = document.querySelectorAll('#itemStarContainer span');
+        itemStars.forEach(star => {
+            star.addEventListener('click', () => { star.dataset.selected = star.getAttribute('data-value'); });
+            star.addEventListener('mouseover', () => highlightStars(itemStars, star.getAttribute('data-value')));
+            star.addEventListener('mouseout', () => highlightStars(itemStars, star.dataset.selected || 0));
+        });
+
+        function highlightStars(starContainer, rating) {
+            starContainer.forEach(s => {
+                s.classList.remove('active');
+                if (parseInt(s.getAttribute('data-value')) <= rating) s.classList.add('active');
+            });
+        }
+
+        function submitItemRating() {
+            const stars = document.querySelectorAll('#itemStarContainer span');
+            let selected = 0;
+            stars.forEach(s => { if (s.classList.contains('active')) selected = parseInt(s.getAttribute('data-value')); });
+            
+            if (selected === 0) { alert("Please select a star rating."); return; }
+
+            // Save locally
+            if (!itemRatings[currentRatingProductId]) itemRatings[currentRatingProductId] = { total: 0, count: 0 };
+            itemRatings[currentRatingProductId].total += selected;
+            itemRatings[currentRatingProductId].count += 1;
+            
+            localStorage.setItem('kireziItemRatings', JSON.stringify(itemRatings));
+            alert("Thank you for rating this item!");
+            closeModal('itemRatingModal');
+            renderProducts(currentDisplayProducts); // Re-render to show new rating
+        }
+
+        // --- SITE FEEDBACK LOGIC ---
+        const siteStars = document.querySelectorAll('#starContainer span');
+        let selectedSiteRating = 0;
+        siteStars.forEach(star => {
+            star.addEventListener('click', () => { selectedSiteRating = parseInt(star.getAttribute('data-value')); highlightStars(siteStars, selectedSiteRating); });
+            star.addEventListener('mouseover', () => highlightStars(siteStars, star.getAttribute('data-value')));
+            star.addEventListener('mouseout', () => highlightStars(siteStars, selectedSiteRating));
+        });
+
+        async function submitRating() {
+            if (selectedSiteRating === 0) { alert("Please select a star rating."); return; }
+            const comment = document.getElementById('ratingComment').value;
+            try {
+                // Try to send to backend, if it fails, just save locally
+                await fetch(`${API_URL}/api/ratings`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ stars: selectedSiteRating, comment: comment })
+                });
+            } catch (e) { console.log("Saved locally (backend offline)"); }
+            
+            alert("Thank you for your feedback!"); 
+            closeModal('ratingModal');
+            selectedSiteRating = 0;
+            highlightStars(siteStars, 0);
+            document.getElementById('ratingComment').value = '';
+        }
+
+        // --- MODAL CONTROLS & UTILS ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const name = e.target.querySelector('input[type="text"]').value;
+            const email = e.target.querySelector('input[type="email"]').value;
+            const phone = e.target.querySelector('input[type="tel"]').value;
+            try {
+                const response = await fetch(`${API_URL}/api/login`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, phone })
+                });
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) { alert("Welcome back, " + name + "!"); }
+            closeModal('loginModal');
+        }
+
+        function sortProducts(type) {
+            document.getElementById('section-title').innerText = "Sorted Products";
+            if (type === 'low-high') { currentDisplayProducts.sort((a, b) => a.price - b.price); }
+            else if (type === 'high-low') { currentDisplayProducts.sort((a, b) => b.price - a.price); }
+            renderProducts(currentDisplayProducts);
+        }
+
+        function filterCategory(category) {
+            document.getElementById('section-title').innerText = category === 'All' ? "All Products" : category + " Collection";
+            if (category === 'All') { currentDisplayProducts = [...allProducts]; }
+            else { currentDisplayProducts = allProducts.filter(p => p.category === category); }
+            renderProducts(currentDisplayProducts);
+        }
+
+        // --- SLIDER ---
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        setInterval(() => {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }, 3500);
+
+        // Trigger site feedback on mouse leave
+        document.addEventListener('mouseleave', function(e) {
+            if (e.clientY < 0) {
+                if (document.getElementById('loginModal').style.display !== 'flex' && document.getElementById('cartModal').style.display !== 'flex') {
+                    openModal('ratingModal');
+                }
+            }
+        });
+
+        loadProducts();
+    </script>
+</body>
+</html>
